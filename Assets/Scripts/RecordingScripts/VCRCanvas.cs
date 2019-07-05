@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+// for testing only. get rid of this 
+
 public class VCRCanvas : MonoBehaviour
 {
     public TextMeshProUGUI vcrText;
@@ -24,7 +26,10 @@ public class VCRCanvas : MonoBehaviour
 
     void SetVCRTextRewind()
     {
-        vcrText.text = "REWIND";
+        if (!isPaused)
+        {
+            vcrText.text = "REWIND";
+        }
     }
 
     void SetVCRTextPlay()

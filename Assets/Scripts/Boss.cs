@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Boss : MonoBehaviour
 {
+    public enum Phase {  Wait, AttackOne, AttackTwo, AttackThree }
+    public Phase phase = Phase.Wait;
     public float waitTime;
 
     public int attackOneBullets;
@@ -18,113 +20,262 @@ public class Boss : MonoBehaviour
     public float attackThreeWaitTime;
     public int attackThreeWaves;
 
+    private float timer;
+
     public Transform weaponOne;
     public Transform weaponTwo;
     public Transform weaponThree;
 
     public GameObject bulletPrefab;
 
+    private VCR vcr;
+    private VHS vhs;
 
     private void Start()
     {
-        StartCoroutine(Wait(AttackOne()));
+        vhs = GetComponent<VHS>();
+        vcr = GetComponent<VCR>();
+        StartCoroutine(Wait(One()));
     }
 
     IEnumerator Wait(IEnumerator i)
     {
-        yield return new WaitForSecondsRealtime(waitTime);
+        phase = Phase.Wait;
+        timer = 0;
+        while(timer < waitTime)
+        {
+            timer += Time.deltaTime;
+            vhs.SetInfo(transform.position, transform.rotation, transform.localScale, Vector3.zero, (int)phase);
+            while (vcr.IsRewinding)
+            {
+                AssignForRewind();
+                yield return null;
+            }
+
+            while (vcr.IsPaused)
+            {
+                yield return null;
+            }
+
+            yield return null;
+        }
+
         StartCoroutine(i);
     }
 
-    IEnumerator AttackOne()
+    IEnumerator One()
     {
-        int bullets = attackOneBullets;
-        int waves = attackOneWaves;
-        int i = 0;
-        while (bullets > 0)
+        phase = Phase.AttackOne;
+        timer = 0;
+        while (timer < waitTime)
         {
-            bullets--;
-            weaponOne.rotation = Quaternion.Euler(0, 0, i * (360 / (attackOneBullets / waves)));
-            Instantiate(bulletPrefab, weaponOne.transform.position, weaponOne.rotation);
-            i++;
-            yield return new WaitForSecondsRealtime(attackOneWaitTime);
+            timer += Time.deltaTime;
+            vhs.SetInfo(transform.position, transform.rotation, transform.localScale, Vector3.zero, (int)phase);
+            while (vcr.IsRewinding)
+            {
+                AssignForRewind();
+                yield return null;
+            }
+
+            while (vcr.IsPaused)
+            {
+                yield return null;
+            }
+
+            yield return null;
         }
 
-        StartCoroutine(Wait(AttackTwo()));
+        StartCoroutine(Wait(Two()));
     }
 
-    IEnumerator AttackTwo()
+    IEnumerator Two()
     {
-        int bullets = attackTwoBullets;
-        int waves = attackTwoWaves;
-        int offset = 0;
-        int bulletsPerWave = bullets / waves;
-        float weaponRot = 0f;
-        float rotAmount = 360 / bulletsPerWave;
-        while (waves > 0)
+        phase = Phase.AttackTwo;
+        timer = 0;
+        while (timer < waitTime)
         {
-            for (int i = 0; i < bulletsPerWave; i++)
+            timer += Time.deltaTime;
+            vhs.SetInfo(transform.position, transform.rotation, transform.localScale, Vector3.zero, (int)phase);
+            while (vcr.IsRewinding)
             {
-                weaponRot = i * rotAmount;
-                weaponTwo.rotation = Quaternion.Euler(0, 0, weaponRot + offset);
-                GameObject obj = Instantiate(bulletPrefab, weaponTwo.transform.position, weaponTwo.rotation);
+                AssignForRewind();
+                yield return null;
             }
-            offset += 9;
-            waves--;
-            yield return new WaitForSecondsRealtime(attackTwoWaitTime);
+
+            while (vcr.IsPaused)
+            {
+                yield return null;
+            }
+
+            yield return null;
         }
 
-        StartCoroutine(Wait(AttackThree()));
+        StartCoroutine(Wait(Three()));
     }
 
-    IEnumerator AttackThree()
+    IEnumerator Three()
     {
-        int bullets = attackThreeBullets;
-        int waves = attackThreeWaves;
-        int bulletsPerWave = bullets / waves;
-        float weaponRot = 0f;
-        float rotOffset = 0;
-        float rotAmount = 360 / bulletsPerWave;
-        while (waves > 0)
+        phase = Phase.AttackThree;
+        timer = 0;
+        while (timer < waitTime)
         {
-            for (int i = 0; i < bulletsPerWave / 4; i++)
+            timer += Time.deltaTime;
+            vhs.SetInfo(transform.position, transform.rotation, transform.localScale, Vector3.zero, (int)phase);
+            while (vcr.IsRewinding)
             {
-                weaponRot = i * rotAmount;
-                weaponTwo.rotation = Quaternion.Euler(0, 0, weaponRot + rotOffset);
-                GameObject obj = Instantiate(bulletPrefab, weaponTwo.transform.position, weaponTwo.rotation);
+                AssignForRewind();
+                yield return null;
             }
 
-            yield return new WaitForSecondsRealtime(attackTwoWaitTime / 2);
-
-            for (int i = 0; i < bulletsPerWave / 4; i++)
+            while (vcr.IsPaused)
             {
-                weaponRot = i * rotAmount;
-                weaponTwo.rotation = Quaternion.Euler(0, 0, weaponRot + rotOffset);
-                GameObject obj = Instantiate(bulletPrefab, weaponTwo.transform.position, weaponTwo.rotation);
+                yield return null;
             }
-            waves--;
-            rotOffset += 90f;
-            yield return new WaitForSecondsRealtime(attackTwoWaitTime);
+
+            yield return null;
         }
 
-        waves = attackThreeWaves * 2;
-        weaponRot = 0;
-        rotOffset = 0;
+        StartCoroutine(Wait(One()));
+    }
 
-        while (waves > 0)
+    //IEnumerator AttackOne()
+    //{
+    //    phase = Phase.AttackOne;
+    //    int bullets = attackOneBullets;
+    //    int waves = attackOneWaves;
+    //    int i = 0;
+    //    bool rewound = false;
+    //    float spawnTime = 0;
+    //    while (bullets > 0)
+    //    {
+    //        while (vcr.isRewinding)
+    //        {
+    //            rewound = true;
+    //            bullets++;
+    //            i--;
+    //            yield return new WaitForSeconds(attackOneWaitTime);
+    //        }
+    //
+    //        if (rewound)
+    //        {
+    //            if (i < 0)
+    //            {
+    //                i = 0;
+    //            }
+    //            if(bullets > attackOneBullets)
+    //            {
+    //                bullets = attackOneBullets;
+    //            }
+    //            rewound = false;
+    //        }
+    //
+    //        bullets--;
+    //        weaponOne.rotation = Quaternion.Euler(0, 0, i * (360 / (attackOneBullets / waves)));
+    //        spawnTime += Time.deltaTime;
+    //        GameObject obj = Instantiate(bulletPrefab, weaponOne.transform.position, weaponOne.rotation);
+    //        obj.GetComponent<Bullet>().SpawnTime = spawnTime;
+    //        i++;
+    //        yield return new WaitForSeconds(attackOneWaitTime);
+    //    }
+    //
+    //    StartCoroutine(Wait(AttackOne()));
+    //}
+    
+    //IEnumerator AttackTwo()
+    //{
+    //    phase = Phase.AttackTwo;
+    //    int bullets = attackTwoBullets;
+    //    int waves = attackTwoWaves;
+    //    int offset = 0;
+    //    int bulletsPerWave = bullets / waves;
+    //    float weaponRot = 0f;
+    //    float rotAmount = 360 / bulletsPerWave;
+    //    while (waves > 0)
+    //    {
+    //        for (int i = 0; i < bulletsPerWave; i++)
+    //        {
+    //            while (vcr.isRewinding || vcr.isPaused)
+    //            {
+    //                yield return null;
+    //            }
+    //            weaponRot = i * rotAmount;
+    //            weaponTwo.rotation = Quaternion.Euler(0, 0, weaponRot + offset);
+    //            GameObject obj = Instantiate(bulletPrefab, weaponTwo.transform.position, weaponTwo.rotation);
+    //        }
+    //        offset += 9;
+    //        waves--;
+    //        yield return new WaitForSeconds(attackTwoWaitTime);
+    //    }
+    //
+    //    StartCoroutine(Wait(AttackOne()));
+    //}
+    
+    //IEnumerator AttackThree()
+    //{
+    //    phase = Phase.AttackThree;
+    //    int bullets = attackThreeBullets;
+    //    int waves = attackThreeWaves;
+    //    int bulletsPerWave = bullets / waves;
+    //    float weaponRot = 0f;
+    //    float rotOffset = 0;
+    //    float rotAmount = 360 / bulletsPerWave;
+    //    while (waves > 0)
+    //    {
+    //        for (int i = 0; i < bulletsPerWave / 4; i++)
+    //        {
+    //            weaponRot = i * rotAmount;
+    //            weaponTwo.rotation = Quaternion.Euler(0, 0, weaponRot + rotOffset);
+    //            GameObject obj = Instantiate(bulletPrefab, weaponTwo.transform.position, weaponTwo.rotation);
+    //        }
+    //
+    //        yield return new WaitForSeconds(attackTwoWaitTime / 2);
+    //
+    //        for (int i = 0; i < bulletsPerWave / 4; i++)
+    //        {
+    //            weaponRot = i * rotAmount;
+    //            weaponTwo.rotation = Quaternion.Euler(0, 0, weaponRot + rotOffset);
+    //            GameObject obj = Instantiate(bulletPrefab, weaponTwo.transform.position, weaponTwo.rotation);
+    //        }
+    //        waves--;
+    //        rotOffset += 90f;
+    //        yield return new WaitForSeconds(attackTwoWaitTime);
+    //    }
+    //
+    //    waves = attackThreeWaves * 2;
+    //    weaponRot = 0;
+    //    rotOffset = 0;
+    //
+    //    while (waves > 0)
+    //    {
+    //        for (int i = 0; i < bulletsPerWave / 4; i++)
+    //        {
+    //            weaponRot = i * rotAmount;
+    //            weaponTwo.rotation = Quaternion.Euler(0, 0, weaponRot + rotOffset);
+    //            GameObject obj = Instantiate(bulletPrefab, weaponTwo.transform.position, weaponTwo.rotation);
+    //        }
+    //
+    //        waves--;
+    //        rotOffset += 90f;
+    //        yield return new WaitForSeconds(attackTwoWaitTime / 4);
+    //    }
+    //
+    //    StartCoroutine(Wait(AttackOne()));
+    //}
+    
+    void AssignForRewind()
+    {
+        transform.position = vhs.Position;
+        transform.rotation = vhs.Rotation;
+        transform.localScale = vhs.Scale;
+        if(vcr.TimeRewound > timer)
         {
-            for (int i = 0; i < bulletsPerWave / 4; i++)
-            {
-                weaponRot = i * rotAmount;
-                weaponTwo.rotation = Quaternion.Euler(0, 0, weaponRot + rotOffset);
-                GameObject obj = Instantiate(bulletPrefab, weaponTwo.transform.position, weaponTwo.rotation);
-            }
-
-            waves--;
-            rotOffset += 90f;
-            yield return new WaitForSecondsRealtime(attackTwoWaitTime / 4);
+            Debug.Log("Back To WAIT");
+            phase = Phase.Wait;
         }
-
-        StartCoroutine(Wait(AttackOne()));
+        else
+        {
+            Debug.Log("Same State " + phase);
+            phase = (Phase)vhs.State;
+        }
     }
 }
