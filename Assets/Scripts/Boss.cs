@@ -9,18 +9,16 @@ public class Boss : MonoBehaviour
     public float waitTime;
 
     public int attackOneBullets;
-    public float attackOneWaitTime;
-    public int attackOneWaves;
+    public float attackOneTime;
 
     public int attackTwoBullets;
     public float attackTwoWaitTime;
-    public int attackTwoWaves;
 
     public int attackThreeBullets;
     public float attackThreeWaitTime;
-    public int attackThreeWaves;
 
     private float timer;
+    private float clock;
 
     public Transform weaponOne;
     public Transform weaponTwo;
@@ -35,107 +33,40 @@ public class Boss : MonoBehaviour
     {
         vhs = GetComponent<VHS>();
         vcr = GetComponent<VCR>();
-        StartCoroutine(Wait(One()));
+        StartCoroutine(Wait(AttackOne()));
     }
 
     IEnumerator Wait(IEnumerator i)
     {
         phase = Phase.Wait;
-        timer = 0;
-        while(timer < waitTime)
-        {
-            timer += Time.deltaTime;
-            vhs.SetInfo(transform.position, transform.rotation, transform.localScale, Vector3.zero, (int)phase);
-            while (vcr.IsRewinding)
-            {
-                AssignForRewind();
-                yield return null;
-            }
-
-            while (vcr.IsPaused)
-            {
-                yield return null;
-            }
-
-            yield return null;
-        }
+        yield return new WaitForSeconds(waitTime);
 
         StartCoroutine(i);
     }
 
-    IEnumerator One()
+    // attack based on time
+    IEnumerator AttackOne()
     {
         phase = Phase.AttackOne;
-        timer = 0;
-        while (timer < waitTime)
+        int bullets = 0;
+        int angle = 0;
+        float timer = 0;
+        int bulletsPerSecond = attackOneBullets / (int)attackOneTime;
+        float wTime = 1.0f / bulletsPerSecond;
+        while (timer < attackOneTime)
         {
-            timer += Time.deltaTime;
-            vhs.SetInfo(transform.position, transform.rotation, transform.localScale, Vector3.zero, (int)phase);
-            while (vcr.IsRewinding)
-            {
-                AssignForRewind();
-                yield return null;
-            }
-
-            while (vcr.IsPaused)
-            {
-                yield return null;
-            }
-
-            yield return null;
+            // adjust firing angle
+            weaponOne.rotation = Quaternion.Euler(0, 0, angle * (360 / (attackOneBullets / attackOneTime)));
+            angle++;
+            // fire and log bullet
+            GameObject obj = Instantiate(bulletPrefab, weaponOne.transform.position, weaponOne.rotation);
+            bullets++;
+            yield return new WaitForSeconds(wTime);
+            // adjust timer
+            timer = bullets / bulletsPerSecond;
         }
 
-        StartCoroutine(Wait(Two()));
-    }
-
-    IEnumerator Two()
-    {
-        phase = Phase.AttackTwo;
-        timer = 0;
-        while (timer < waitTime)
-        {
-            timer += Time.deltaTime;
-            vhs.SetInfo(transform.position, transform.rotation, transform.localScale, Vector3.zero, (int)phase);
-            while (vcr.IsRewinding)
-            {
-                AssignForRewind();
-                yield return null;
-            }
-
-            while (vcr.IsPaused)
-            {
-                yield return null;
-            }
-
-            yield return null;
-        }
-
-        StartCoroutine(Wait(Three()));
-    }
-
-    IEnumerator Three()
-    {
-        phase = Phase.AttackThree;
-        timer = 0;
-        while (timer < waitTime)
-        {
-            timer += Time.deltaTime;
-            vhs.SetInfo(transform.position, transform.rotation, transform.localScale, Vector3.zero, (int)phase);
-            while (vcr.IsRewinding)
-            {
-                AssignForRewind();
-                yield return null;
-            }
-
-            while (vcr.IsPaused)
-            {
-                yield return null;
-            }
-
-            yield return null;
-        }
-
-        StartCoroutine(Wait(One()));
+        StartCoroutine(Wait(AttackOne()));
     }
 
     //IEnumerator AttackOne()
@@ -146,9 +77,15 @@ public class Boss : MonoBehaviour
     //    int i = 0;
     //    bool rewound = false;
     //    float spawnTime = 0;
+    //    // while there are bullets to fire
     //    while (bullets > 0)
     //    {
-    //        while (vcr.isRewinding)
+    //        while (vcr.IsPaused)
+    //        {
+    //            yield return null;
+    //        }
+    //
+    //        while (vcr.IsRewinding)
     //        {
     //            rewound = true;
     //            bullets++;
@@ -171,16 +108,16 @@ public class Boss : MonoBehaviour
     //
     //        bullets--;
     //        weaponOne.rotation = Quaternion.Euler(0, 0, i * (360 / (attackOneBullets / waves)));
+    //        i++;
     //        spawnTime += Time.deltaTime;
     //        GameObject obj = Instantiate(bulletPrefab, weaponOne.transform.position, weaponOne.rotation);
-    //        obj.GetComponent<Bullet>().SpawnTime = spawnTime;
-    //        i++;
+    //
     //        yield return new WaitForSeconds(attackOneWaitTime);
     //    }
     //
-    //    StartCoroutine(Wait(AttackOne()));
+    //    StartCoroutine(Wait(AttackTwo()));
     //}
-    
+    //
     //IEnumerator AttackTwo()
     //{
     //    phase = Phase.AttackTwo;
@@ -190,11 +127,38 @@ public class Boss : MonoBehaviour
     //    int bulletsPerWave = bullets / waves;
     //    float weaponRot = 0f;
     //    float rotAmount = 360 / bulletsPerWave;
+    //    bool rewound = false;
     //    while (waves > 0)
     //    {
+    //        while (vcr.IsPaused)
+    //        {
+    //            yield return null;
+    //        }
+    //
+    //        while (vcr.IsRewinding)
+    //        {
+    //            rewound = true;
+    //            bullets++;
+    //            i--;
+    //            yield return new WaitForSeconds(attackOneWaitTime);
+    //        }
+    //
+    //        if (rewound)
+    //        {
+    //            if (i < 0)
+    //            {
+    //                i = 0;
+    //            }
+    //            if (bullets > attackOneBullets)
+    //            {
+    //                bullets = attackOneBullets;
+    //            }
+    //            rewound = false;
+    //        }
+    //
     //        for (int i = 0; i < bulletsPerWave; i++)
     //        {
-    //            while (vcr.isRewinding || vcr.isPaused)
+    //            while (vcr.IsRewinding || vcr.IsPaused)
     //            {
     //                yield return null;
     //            }
@@ -207,9 +171,9 @@ public class Boss : MonoBehaviour
     //        yield return new WaitForSeconds(attackTwoWaitTime);
     //    }
     //
-    //    StartCoroutine(Wait(AttackOne()));
+    //    StartCoroutine(Wait(AttackThree()));
     //}
-    
+    //
     //IEnumerator AttackThree()
     //{
     //    phase = Phase.AttackThree;
@@ -261,7 +225,7 @@ public class Boss : MonoBehaviour
     //
     //    StartCoroutine(Wait(AttackOne()));
     //}
-    
+
     void AssignForRewind()
     {
         transform.position = vhs.Position;

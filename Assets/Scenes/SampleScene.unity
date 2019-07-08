@@ -320,7 +320,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &535257797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -481,13 +481,41 @@ GameObject:
   - component: {fileID: 1128058315}
   - component: {fileID: 1128058314}
   - component: {fileID: 1128058313}
+  - component: {fileID: 1128058317}
+  - component: {fileID: 1128058318}
+  - component: {fileID: 1128058312}
+  - component: {fileID: 1128058311}
   m_Layer: 0
   m_Name: Boss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
+--- !u!114 &1128058311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1128058310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b89029553729994aa079515c1f7c195, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1128058312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1128058310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34e9481619722c84fac4dbbf138a72b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!61 &1128058313
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -600,6 +628,46 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1128058317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1128058310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7d2a72427eb3c5468a0ff0e294866a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 0
+  dist: 0
+  rotDir: 0
+--- !u!114 &1128058318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1128058310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 496c05886caf9f84992cf1b11a8cd208, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  phase: 0
+  waitTime: 2
+  attackOneBullets: 100
+  attackOneTime: 4
+  attackTwoBullets: 100
+  attackTwoWaitTime: 0.4
+  attackThreeBullets: 100
+  attackThreeWaitTime: 0.4
+  weaponOne: {fileID: 50481334}
+  weaponTwo: {fileID: 1131512233}
+  weaponThree: {fileID: 2085396339}
+  bulletPrefab: {fileID: 3308253680835122332, guid: 0851d6c85ebabe24fb9da67814add073,
+    type: 3}
 --- !u!1 &1131512232
 GameObject:
   m_ObjectHideFlags: 0
@@ -809,7 +877,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1811176874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1122,7 +1190,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2099634730
 MonoBehaviour:
   m_ObjectHideFlags: 0
